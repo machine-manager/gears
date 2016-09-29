@@ -1,4 +1,17 @@
-defmodule GearsTest do
+defmodule Gears.LangUtilTest do
+	use ExUnit.Case
+
+	test "ok_or_raise works" do
+		import Gears.LangUtil
+
+		assert :ok == ok_or_raise(:ok)
+		assert_raise ArithmeticError, fn ->
+			ok_or_raise({:error, ArithmeticError})
+		end
+	end
+end
+
+defmodule Gears.FileUtilTest do
 	use ExUnit.Case
 
 	test "temp_path returns a string" do

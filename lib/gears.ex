@@ -1,5 +1,5 @@
 defmodule Gears do
-	defmodule MacroUtil do
+	defmodule LangUtil do
 		@doc ~S"""
 		For use in a pipeline like so:
 
@@ -20,10 +20,13 @@ defmodule Gears do
 				end
 			end
 		end
+
+		def ok_or_raise({:error, term}), do: raise term
+		def ok_or_raise(:ok), do: :ok
 	end
 
 	defmodule FileUtil do
-		import Gears.MacroUtil, only: [append_if: 3]
+		import Gears.LangUtil, only: [append_if: 3]
 
 		@doc """
 		Unlinks `path` if it exists.  Must be a file or an empty directory.
@@ -51,6 +54,12 @@ defmodule Gears do
 			p = temp_path(prefix)
 			File.mkdir_p!(p)
 			p
+		end
+	end
+
+	defmodule IOUtil do
+		def binwrite!(f, content) do
+			LangUtil.ok_or_raise(IO.binwrite(f, content))
 		end
 	end
 end
