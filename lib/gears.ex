@@ -4,17 +4,17 @@ defmodule Gears do
 		For use in a pipeline like so:
 
 			s
-			|> append_if(c.section, "Section: #{c.section}\n")
-			|> append_if(true, "Description: #{c.short_description}\n")
-			|> append_if(c.long_description, prefix_every_line(c.long_description, " ") <> "\n")
+			|> oper_if(c.section,          &Kernel.<>/2, "Section: #{c.section}\n")
+			|> oper_if(true,               &Kernel.<>/2, "Description: #{c.short_description}\n")
+			|> oper_if(c.long_description, &Kernel.<>/2, prefix_every_line(c.long_description, " ") <> "\n")
 
 		`expression` is not evaluated unless evaluation of `clause` is truthy.  This avoids
 		blowing up on nils and other unexpected values.
 		"""
-		defmacro append_if(acc, clause, expression) do
+		defmacro oper_if(acc, clause, operator, expression) do
 			quote do
 				if unquote(clause) do
-					unquote(acc) <> unquote(expression)
+					unquote(operator).(unquote(acc), unquote(expression))
 				else
 					unquote(acc)
 				end
@@ -26,7 +26,7 @@ defmodule Gears do
 	end
 
 	defmodule FileUtil do
-		import Gears.LangUtil, only: [append_if: 3]
+		import Gears.LangUtil, only: [oper_if: 4]
 
 		@doc """
 		Unlinks `path` if it exists.  Must be a file or an empty directory.
@@ -46,7 +46,7 @@ defmodule Gears do
 		def temp_path(prefix, extension \\ "") do
 			random = :crypto.strong_rand_bytes(16) |> Base.url_encode64(padding: false)
 			Path.join(System.tmp_dir, "#{prefix}-#{random}")
-			|> append_if(String.first(extension), ".#{extension}")
+			|> oper_if(String.first(extension), &Kernel.<>/2, ".#{extension}")
 		end
 
 		@spec temp_dir(String.t) :: String.t
