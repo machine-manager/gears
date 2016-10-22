@@ -2,34 +2,37 @@ defmodule Gears.LangUtilTest do
 	use ExUnit.Case
 
 	test "oper_if works on binaries" do
-		import Gears.LangUtil, only: [oper_if: 4]
+		import Gears.LangUtil, only: [oper_if: 3]
 
 		s = "hello"
-		out = s
-			|> oper_if(true,  &Kernel.<>/2, " ")
-			|> oper_if(false, &Kernel.<>/2, "mars")
-			|> oper_if(true,  &Kernel.<>/2, "world")
+		out = {s, &Kernel.<>/2}
+			|> oper_if(true,  " ")
+			|> oper_if(false, "mars")
+			|> oper_if(true,  "world")
+			|> elem(0)
 		assert out == "hello world"
 	end
 
 	test "oper_if works on lists" do
-		import Gears.LangUtil, only: [oper_if: 4]
+		import Gears.LangUtil, only: [oper_if: 3]
 
 		s = ["hello"]
-		out = s
-			|> oper_if(true,  &Kernel.++/2, [" "])
-			|> oper_if(false, &Kernel.++/2, ["mars"])
-			|> oper_if(true,  &Kernel.++/2, ["world"])
+		out = {s, &Kernel.++/2}
+			|> oper_if(true,  [" "])
+			|> oper_if(false, ["mars"])
+			|> oper_if(true,  ["world"])
+			|> elem(0)
 		assert out == ["hello", " ", "world"]
 	end
 
 	test "oper_if doesn't evaluate expression unless condition is truthy" do
-		import Gears.LangUtil, only: [oper_if: 4]
+		import Gears.LangUtil, only: [oper_if: 3]
 
 		s = "hello"
-		out = s
-			|> oper_if(false, &Kernel.<>/2, "#{:foo + 1}")
-			|> oper_if(nil,   &Kernel.<>/2, "#{:foo + 2}")
+		out = {s, &Kernel.<>/2}
+			|> oper_if(false, "#{:foo + 1}")
+			|> oper_if(nil,   "#{:foo + 2}")
+			|> elem(0)
 		assert out == "hello"
 	end
 
