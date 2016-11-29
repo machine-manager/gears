@@ -66,4 +66,15 @@ defmodule Gears do
 			LangUtil.ok_or_raise(IO.binwrite(f, content))
 		end
 	end
+
+	defmodule StringUtil do
+		@doc """
+		Take a multi-line string `s` and return a list of lines that match `regexp`.
+		"""
+		def grep(s, regexp) do
+			s
+			|> String.split("\n")
+			|> Enum.filter(&(String.match?(&1, regexp)))
+		end
+	end
 end
