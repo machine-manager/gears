@@ -10,10 +10,6 @@ defmodule Gears.Mixfile do
      deps: deps()]
   end
 
-  def application do
-    [applications: [:logger]]
-  end
-
   defp deps do
     []
   end
