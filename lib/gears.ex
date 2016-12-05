@@ -76,5 +76,12 @@ defmodule Gears do
 			|> String.split("\n")
 			|> Enum.filter(&(String.match?(&1, regexp)))
 		end
+
+		def counted_noun(count, singular, plural) do
+			case count do
+				1 -> "#{count} #{singular}"
+				_ -> "#{count} #{plural}"
+			end
+		end
 	end
 end

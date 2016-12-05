@@ -89,4 +89,10 @@ defmodule Gears.StringUtilTest do
 		assert StringUtil.grep("hello\nworld\norange",   ~r"^$")     == []
 		assert StringUtil.grep("hello\nworld\norange\n", ~r"^$")     == [""]
 	end
+
+	test "counted_noun works" do
+		assert StringUtil.counted_noun(0, "unit", "units") == "0 units"
+		assert StringUtil.counted_noun(1, "unit", "units") == "1 unit"
+		assert StringUtil.counted_noun(2, "unit", "units") == "2 units"
+	end
 end
