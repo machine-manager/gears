@@ -84,4 +84,13 @@ defmodule Gears do
 			end
 		end
 	end
+
+	defmodule SystemUtil do
+		def print_stack() do
+			IO.write("\n")
+			IO.write("=========================== stack trace ===========================\n")
+			IO.write(Exception.format_stacktrace())
+			IO.write("===================================================================\n")
+		end
+	end
 end
