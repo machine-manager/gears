@@ -104,7 +104,7 @@ defmodule Gears.TableFormatterTest do
 
 	test "table formatter works with default padding" do
 		# Note that strings in the last column are not padded by default
-		assert TableFormatter.format(@data) ==
+		assert TableFormatter.format(@data) |> IO.iodata_to_binary ==
 			"""
 			1          hello       -0.555
 			1000000000 world       
@@ -113,7 +113,7 @@ defmodule Gears.TableFormatterTest do
 	end
 
 	test "table formatter works with padding of 2" do
-		assert TableFormatter.format(@data, padding: 2) ==
+		assert TableFormatter.format(@data, padding: 2) |> IO.iodata_to_binary ==
 			"""
 			1           hello        -0.555
 			1000000000  world        

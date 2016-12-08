@@ -97,30 +97,45 @@ defmodule Gears do
 	# Based on Patrick Oscity's answer at
 	# http://stackoverflow.com/questions/30749400/output-tabular-data-with-io-ansi
 	defmodule TableFormatter do
+		@doc """
+		Takes a list of rows (themselves a list of columns) and returns
+		iodata containing an aligned ASCII table with `padding` spaces
+		between each column.
+
+		Strategy:
+		- convert all values to strings
+		- compute max width of each column
+		- map each cell to [cell, padding] except last column
+		  - pad amount = padding + (width of column - width of cell)
+		- intersperse rows with \n
+
+		iex> format([[1, 2, 3], [4000, 6000, 9000]])
+		[[[["1", "    "], ["2", "    "], "3"], 10,
+		  [["4000", " "], ["6000", " "], "9000"]], 10]
+		"""
 		def format(rows, opts \\ []) do
 			padding         = Keyword.get(opts, :padding, 1)
 			rows            = stringify(rows)
 			widths          = rows |> transpose |> column_widths
-			# Don't pad strings in the last column
-			widths          = Enum.drop(widths, -1) ++ [-padding]
-			rows
-			|> pad_cells(widths, padding)
-			|> join_rows
+			iodata = rows
+				|> pad_cells(widths, padding)
+				|> Enum.intersperse(?\n)
+			[iodata, ?\n]
 		end
 
 		defp pad_cells(rows, widths, padding) do
 			Enum.map(rows, fn row ->
-				for {val, width} <- Enum.zip(row, widths) do
-					String.pad_trailing(val, width + padding)
-				end
+				map_special(
+					Enum.zip(row, widths),
+					# pad all values...
+					fn {val, width} ->
+						pad_amount = width - (val |> byte_size) + padding
+						[val, "" |> String.pad_leading(pad_amount)]
+					end,
+					# ...except the one in the last column
+					fn {val, _width} -> val end
+				)
 			end)
-		end
-
-		defp join_rows(rows) do
-			# Make sure we get a trailing newline
-			Stream.concat(rows, [[""]])
-			|> Enum.map(&Enum.join/1)
-			|> Enum.join("\n")
 		end
 
 		defp stringify(rows) do
@@ -139,6 +154,22 @@ defmodule Gears do
 		defp transpose([[]|_]), do: []
 		defp transpose(rows) do
 			[Enum.map(rows, &hd/1) | transpose(Enum.map(rows, &tl/1))]
+		end
+
+		# Map elements in `enumerable` with `fun1` except for the last element
+		# which is mapped with `fun2`.
+		defp map_special(enumerable, fun1, fun2) do
+			do_map_special(enumerable, [], fun1, fun2) |> :lists.reverse
+		end
+
+		defp do_map_special([], _acc, _fun1, _fun2) do
+			[]
+		end
+		defp do_map_special([t], acc, _fun1, fun2) do
+			[fun2.(t) | acc]
+		end
+		defp do_map_special([h|t], acc, fun1, fun2) do
+			do_map_special(t, [fun1.(h) | acc], fun1, fun2)
 		end
 	end
 end
