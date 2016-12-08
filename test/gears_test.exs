@@ -108,7 +108,7 @@ defmodule Gears.TableFormatterTest do
 			"""
 			1          hello       -0.555
 			1000000000 world       
-			3          longer data 3.5\
+			3          longer data 3.5
 			"""
 	end
 
@@ -117,7 +117,7 @@ defmodule Gears.TableFormatterTest do
 			"""
 			1           hello        -0.555
 			1000000000  world        
-			3           longer data  3.5\
+			3           longer data  3.5
 			"""
 	end
 end

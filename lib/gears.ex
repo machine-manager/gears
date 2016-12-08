@@ -117,7 +117,10 @@ defmodule Gears do
 		end
 
 		defp join_rows(rows) do
-			rows |> Enum.map(&Enum.join/1) |> Enum.join("\n")
+			# Make sure we get a trailing newline
+			Stream.concat(rows, [[""]])
+			|> Enum.map(&Enum.join/1)
+			|> Enum.join("\n")
 		end
 
 		defp stringify(rows) do
