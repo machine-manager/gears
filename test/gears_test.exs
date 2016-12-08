@@ -1,4 +1,4 @@
-alias Gears.{LangUtil, FileUtil, StringUtil}
+alias Gears.{LangUtil, FileUtil, StringUtil, TableFormatter}
 
 defmodule Gears.LangUtilTest do
 	use ExUnit.Case
@@ -94,5 +94,30 @@ defmodule Gears.StringUtilTest do
 		assert StringUtil.counted_noun(0, "unit", "units") == "0 units"
 		assert StringUtil.counted_noun(1, "unit", "units") == "1 unit"
 		assert StringUtil.counted_noun(2, "unit", "units") == "2 units"
+	end
+end
+
+defmodule Gears.TableFormatterTest do
+	use ExUnit.Case
+
+	@data [[1, "hello", -0.555], [1000000000, "world", ""], [3, "longer data", 3.5]]
+
+	test "table formatter works with default padding" do
+		# Note that strings in the last column are not padded by default
+		assert TableFormatter.format(@data) ==
+			"""
+			1          hello       -0.555
+			1000000000 world       
+			3          longer data 3.5\
+			"""
+	end
+
+	test "table formatter works with padding of 2" do
+		assert TableFormatter.format(@data, padding: 2) ==
+			"""
+			1           hello        -0.555
+			1000000000  world        
+			3           longer data  3.5\
+			"""
 	end
 end
