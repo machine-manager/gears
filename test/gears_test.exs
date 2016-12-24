@@ -122,6 +122,6 @@ defmodule Gears.TableFormatterTest do
 	end
 
 	test "table formatter works with 0 rows" do
-		assert TableFormatter.format([], padding: 1) |> IO.iodata_to_binary == "\n"
+		assert TableFormatter.format([], padding: 1) |> IO.iodata_to_binary == ""
 	end
 end

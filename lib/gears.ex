@@ -105,9 +105,9 @@ defmodule Gears do
 		Strategy:
 		- convert all values to strings
 		- compute max width of each column
-		- map each cell to [cell, padding] except last column
-		  - pad amount = padding + (width of column - width of cell)
-		- intersperse rows with \n
+		- map each value to [value, padding] except last column
+		  - pad amount = (column width - value width) + padding
+		- append \n to each row
 
 		iex> format([[1, 2, 3], [4000, 6000, 9000]])
 		[[[["1", "    "], ["2", "    "], "3"], 10,
@@ -117,10 +117,9 @@ defmodule Gears do
 			padding = Keyword.get(opts, :padding, 1)
 			rows    = stringify(rows)
 			widths  = rows |> transpose |> column_widths
-			iodata  = rows
-				|> pad_cells(widths, padding)
-				|> Enum.intersperse(?\n)
-			[iodata, ?\n]
+			rows
+			|> pad_cells(widths, padding)
+			|> Enum.map(&[&1, ?\n])
 		end
 
 		defp pad_cells(rows, widths, padding) do
