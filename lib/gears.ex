@@ -114,10 +114,10 @@ defmodule Gears do
 		  [["4000", " "], ["6000", " "], "9000"]], 10]
 		"""
 		def format(rows, opts \\ []) do
-			padding         = Keyword.get(opts, :padding, 1)
-			rows            = stringify(rows)
-			widths          = rows |> transpose |> column_widths
-			iodata = rows
+			padding = Keyword.get(opts, :padding, 1)
+			rows    = stringify(rows)
+			widths  = rows |> transpose |> column_widths
+			iodata  = rows
 				|> pad_cells(widths, padding)
 				|> Enum.intersperse(?\n)
 			[iodata, ?\n]
