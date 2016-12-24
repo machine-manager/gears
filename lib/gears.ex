@@ -150,10 +150,10 @@ defmodule Gears do
 			end)
 		end
 
-		# http://stackoverflow.com/questions/23705074
-		defp transpose([[]|_]), do: []
 		defp transpose(rows) do
-			[Enum.map(rows, &hd/1) | transpose(Enum.map(rows, &tl/1))]
+			rows
+			|> List.zip
+			|> Enum.map(&Tuple.to_list(&1))
 		end
 
 		# Map elements in `enumerable` with `fun1` except for the last element
