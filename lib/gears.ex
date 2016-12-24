@@ -97,7 +97,7 @@ defmodule Gears do
 	# Based on Patrick Oscity's answer at
 	# http://stackoverflow.com/questions/30749400/output-tabular-data-with-io-ansi
 	defmodule TableFormatter do
-		@doc """
+		@doc ~S"""
 		Takes a list of rows (themselves a list of columns) and returns
 		iodata containing an aligned ASCII table with `padding` spaces
 		between each column.
