@@ -83,14 +83,26 @@ end
 defmodule Gears.StringUtilTest do
 	use ExUnit.Case
 
-	test "grep works" do
+	test "grep" do
 		assert StringUtil.grep("hello\nworld\norange",   ~r"l")      == ["hello", "world"]
 		assert StringUtil.grep("hello\nworld\norange",   ~r"^.{6}$") == ["orange"]
 		assert StringUtil.grep("hello\nworld\norange",   ~r"^$")     == []
 		assert StringUtil.grep("hello\nworld\norange\n", ~r"^$")     == [""]
 	end
 
-	test "counted_noun works" do
+	test "remove_empty_lines" do
+		assert StringUtil.remove_empty_lines("") == ""
+		assert StringUtil.remove_empty_lines("\n") == ""
+		assert StringUtil.remove_empty_lines("\nline") == "line"
+		assert StringUtil.remove_empty_lines("\n\nline") == "line"
+		assert StringUtil.remove_empty_lines("\n\nline\n") == "line\n"
+		assert StringUtil.remove_empty_lines("\n\nline\n\n") == "line\n"
+		assert StringUtil.remove_empty_lines("hello\nworld") == "hello\nworld"
+		assert StringUtil.remove_empty_lines("hello\nworld\n") == "hello\nworld\n"
+		assert StringUtil.remove_empty_lines("hello\n\n\nworld\n\n\n") == "hello\nworld\n"
+	end
+
+	test "counted_noun" do
 		assert StringUtil.counted_noun(0, "unit", "units") == "0 units"
 		assert StringUtil.counted_noun(1, "unit", "units") == "1 unit"
 		assert StringUtil.counted_noun(2, "unit", "units") == "2 units"
@@ -102,7 +114,7 @@ defmodule Gears.TableFormatterTest do
 
 	@data [[1, "hello", -0.555], [1000000000, "world", ""], [3, "longer data", 3.5]]
 
-	test "table formatter works with default padding" do
+	test "table formatter with default padding" do
 		# Note that strings in the last column are not padded
 		assert TableFormatter.format(@data) |> IO.iodata_to_binary ==
 			"""
@@ -112,7 +124,7 @@ defmodule Gears.TableFormatterTest do
 			"""
 	end
 
-	test "table formatter works with padding of 2" do
+	test "table formatter with padding of 2" do
 		assert TableFormatter.format(@data, padding: 2) |> IO.iodata_to_binary ==
 			"""
 			1           hello        -0.555
@@ -121,7 +133,7 @@ defmodule Gears.TableFormatterTest do
 			"""
 	end
 
-	test "table formatter works with 0 rows" do
+	test "table formatter with 0 rows" do
 		assert TableFormatter.format([], padding: 1) |> IO.iodata_to_binary == ""
 	end
 end

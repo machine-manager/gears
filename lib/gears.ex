@@ -77,6 +77,15 @@ defmodule Gears do
 			|> Enum.filter(&(String.match?(&1, regexp)))
 		end
 
+		@doc """
+		Removes empty lines from a multi-line string.
+		"""
+		def remove_empty_lines(s) do
+			s
+			|> String.replace(~r/^\n+/,   "")
+			|> String.replace(~r/\n{2,}/, "\n")
+		end
+
 		def counted_noun(count, singular, plural) do
 			case count do
 				1 -> "#{count} #{singular}"
