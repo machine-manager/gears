@@ -30,8 +30,8 @@ defmodule Gears do
 
 	defmodule FileUtil do
 		@doc """
-		Unlinks `path` if it exists.  Must be a file or an empty directory.
-		The parent directories must exist in any case.
+		Unlinks `path` if it exists.  Ignores `enoent` errors; raises
+		`File.Error` for any other error.
 		"""
 		@spec rm_f!(String.t) :: nil
 		def rm_f!(path) do
