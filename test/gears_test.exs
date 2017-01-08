@@ -133,6 +133,15 @@ defmodule Gears.TableFormatterTest do
 			"""
 	end
 
+	test "table formatter with a width_fn" do
+		assert TableFormatter.format(@data, width_fn: &(2 * String.length(&1))) |> IO.iodata_to_binary ==
+			"""
+			1                    hello                  -0.555
+			1000000000           world                  
+			3                    longer data            3.5
+			"""
+	end
+
 	test "table formatter with 0 rows" do
 		assert TableFormatter.format([], padding: 1) |> IO.iodata_to_binary == ""
 	end

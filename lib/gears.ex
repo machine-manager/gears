@@ -109,23 +109,38 @@ defmodule Gears do
 		@doc ~S"""
 		Takes a list of rows (themselves a list of columns) and returns
 		iodata containing an aligned ASCII table with `padding` spaces
-		between each column.
+		between each column.  Assumes that all characters are either all
+		halfwidth or all fullwidth.
 
-		Strategy:
-		- convert all values to strings
-		- compute max width of each column
-		- map each value to [value, padding] except last column
-		  - pad amount = (column width - value width) + padding
-		- append \n to each row
+		## Options
 
-		iex> format([[1, 2, 3], [4000, 6000, 9000]])
-		[[[["1", "    "], ["2", "    "], "3"], 10,
-		  [["4000", " "], ["6000", " "], "9000"]], 10]
+		  * `:padding`  - how many halfwidth spaces between columns (default: 1)
+		  * `:width_fn` - a function called on each string to determine its width
+		                  (default: &String.length/1).  Use this when the string
+		                  contains ANSI escapes that must be stripped, or a mixture
+		                  of halfwidth and fullwidth characters.
+
+		## Implementation strategy
+
+		  1. convert all values to strings
+		  2. compute max width of each column
+		  3. map each value to [value, padding] except last column
+		     - pad amount = (column width - value width) + padding
+		  4. append \n to each row
+
+		## Example
+
+		    iex> format([[1, 2, 3], [4000, 6000, 9000]])
+		    [[[["1", "    "], ["2", "    "], "3"], 10,
+		      [["4000", " "], ["6000", " "], "9000"]], 10]
 		"""
 		def format(rows, opts \\ []) do
-			padding = Keyword.get(opts, :padding, 1)
-			rows    = stringify(rows)
-			widths  = rows |> transpose |> column_widths
+			import PipeHere
+
+			padding  = Keyword.get(opts, :padding,  1)
+			width_fn = Keyword.get(opts, :width_fn, &String.length/1)
+			rows     = stringify(rows)
+			widths   = rows |> transpose |> column_widths(_, width_fn) |> pipe_here
 			rows
 			|> pad_cells(widths, padding)
 			|> Enum.map(&[&1, ?\n])
@@ -152,9 +167,9 @@ defmodule Gears do
 			end)
 		end
 
-		defp column_widths(columns) do
+		defp column_widths(columns, width_fn) do
 			Enum.map(columns, fn column ->
-				column |> Enum.map(&String.length/1) |> Enum.max
+				column |> Enum.map(width_fn) |> Enum.max
 			end)
 		end
 
