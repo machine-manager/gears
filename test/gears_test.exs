@@ -133,13 +133,33 @@ defmodule Gears.TableFormatterTest do
 			"""
 	end
 
-	test "table formatter with a width_fn" do
-		assert TableFormatter.format(@data, width_fn: &(2 * String.length(&1))) |> IO.iodata_to_binary ==
+	test "table formatter with padding of 0" do
+		assert TableFormatter.format(@data, padding: 0) |> IO.iodata_to_binary ==
 			"""
-			1                    hello                  -0.555
-			1000000000           world                  
-			3                    longer data            3.5
+			1         hello      -0.555
+			1000000000world      
+			3         longer data3.5
 			"""
+	end
+
+	test "table formatter with a width_fn that strips ANSI" do
+		underlined_data = @data |> Enum.map(fn row -> row |> Enum.map(&underlined/1) end)
+		assert TableFormatter.format(underlined_data, width_fn: &(&1 |> strip_ansi |> String.length))
+		       |> IO.iodata_to_binary |> strip_ansi ==
+			"""
+			1          hello       -0.555
+			1000000000 world       
+			3          longer data 3.5
+			"""
+	end
+
+	defp underlined(s) do
+		"#{IO.ANSI.underline()}#{s}#{IO.ANSI.no_underline()}"
+	end
+
+	defp strip_ansi(s) do
+		# Based on https://github.com/chalk/ansi-regex/blob/dce3806b159260354de1a77c1db543a967f7218f/index.js
+		s |> String.replace(~r/[\x{001b}\x{009b}][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/, "")
 	end
 
 	test "table formatter with 0 rows" do

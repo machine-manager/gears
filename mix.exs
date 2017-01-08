@@ -13,6 +13,6 @@ defmodule Gears.Mixfile do
 	end
 
 	defp deps do
-		[{:pipe_here, ">= 1.0.0"}]
+		[]
 	end
 end

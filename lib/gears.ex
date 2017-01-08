@@ -1,4 +1,6 @@
 defmodule Gears do
+	import ExUnit.Assertions, only: [assert: 1, assert: 2]
+
 	defmodule LangUtil do
 		@doc ~S"""
 		For use in a pipeline like so:
@@ -135,24 +137,23 @@ defmodule Gears do
 		      [["4000", " "], ["6000", " "], "9000"]], 10]
 		"""
 		def format(rows, opts \\ []) do
-			import PipeHere
-
 			padding  = Keyword.get(opts, :padding,  1)
 			width_fn = Keyword.get(opts, :width_fn, &String.length/1)
 			rows     = stringify(rows)
-			widths   = rows |> transpose |> column_widths(_, width_fn) |> pipe_here
+			widths   = rows |> transpose |> column_widths(width_fn)
 			rows
-			|> pad_cells(widths, padding)
+			|> pad_cells(widths, padding, width_fn)
 			|> Enum.map(&[&1, ?\n])
 		end
 
-		defp pad_cells(rows, widths, padding) do
+		defp pad_cells(rows, column_widths, padding, width_fn) do
 			Enum.map(rows, fn row ->
 				map_special(
-					Enum.zip(row, widths),
+					Enum.zip(row, column_widths),
 					# pad all values...
-					fn {val, width} ->
-						pad_amount = width - (val |> byte_size) + padding
+					fn {val, column_width} ->
+						pad_amount = column_width - width_fn.(val) + padding
+						assert pad_amount >= 0
 						[val, "" |> String.pad_leading(pad_amount)]
 					end,
 					# ...except the one in the last column
