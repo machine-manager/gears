@@ -107,9 +107,9 @@ defmodule Gears do
 	# http://stackoverflow.com/questions/30749400/output-tabular-data-with-io-ansi
 	defmodule TableFormatter do
 		@doc ~S"""
-		Takes a list of rows (themselves a list of columns) and returns
-		iodata containing an aligned ASCII table with `padding` spaces
-		between each column.  Assumes that all characters are either all
+		Takes a list of rows (themselves a list of columns containing only string
+		values) and returns iodata containing an aligned ASCII table with `padding`
+		spaces between each column.  Assumes that all characters are either all
 		halfwidth or all fullwidth.
 
 		## Options
@@ -122,11 +122,10 @@ defmodule Gears do
 
 		## Implementation strategy
 
-		  1. convert all values to strings
-		  2. compute max width of each column
-		  3. map each value to [value, padding] except last column
+		  1. compute max width of each column
+		  2. map each value to [value, padding] except last column
 		     - pad amount = (column width - value width) + padding
-		  4. append \n to each row
+		  3. append \n to each row
 
 		## Example
 
@@ -137,7 +136,6 @@ defmodule Gears do
 		def format(rows, opts \\ []) do
 			padding  = Keyword.get(opts, :padding,  1)
 			width_fn = Keyword.get(opts, :width_fn, &String.length/1)
-			rows     = stringify(rows)
 			widths   = rows |> transpose |> column_widths(width_fn)
 			rows
 			|> pad_cells(widths, padding, width_fn)
@@ -159,15 +157,16 @@ defmodule Gears do
 			end)
 		end
 
-		defp stringify(rows) do
-			Enum.map(rows, fn row ->
-				Enum.map(row, &to_string/1)
-			end)
-		end
-
 		defp column_widths(columns, width_fn) do
 			Enum.map(columns, fn column ->
-				column |> Enum.map(width_fn) |> Enum.max
+				column
+				|> Enum.map(fn v ->
+						if not is_binary(v) do
+							raise ArgumentError, message: "All values given to TableFormatter must be strings"
+						end
+						width_fn.(v)
+					end)
+				|> Enum.max
 			end)
 		end
 

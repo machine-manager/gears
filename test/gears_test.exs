@@ -112,7 +112,8 @@ end
 defmodule Gears.TableFormatterTest do
 	use ExUnit.Case
 
-	@data [[1, "hello", -0.555], [1000000000, "world", ""], [3, "longer data", 3.5]]
+	@bad_data [[1, "hello", -0.555], [1000000000, "world", ""], [3, "longer data", 3.5]]
+	@data     [["1", "hello", "-0.555"], ["1000000000", "world", ""], ["3", "longer data", "3.5"]]
 
 	test "table formatter with default padding" do
 		# Note that strings in the last column are not padded
@@ -164,5 +165,9 @@ defmodule Gears.TableFormatterTest do
 
 	test "table formatter with 0 rows" do
 		assert TableFormatter.format([], padding: 1) |> IO.iodata_to_binary == ""
+	end
+
+	test "raises error on non-string values" do
+		assert_raise ArgumentError, ~r/^All values /, fn -> TableFormatter.format(@bad_data) end
 	end
 end
