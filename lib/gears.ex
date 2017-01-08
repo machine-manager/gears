@@ -1,6 +1,4 @@
 defmodule Gears do
-	import ExUnit.Assertions, only: [assert: 1, assert: 2]
-
 	defmodule LangUtil do
 		@doc ~S"""
 		For use in a pipeline like so:
@@ -153,7 +151,6 @@ defmodule Gears do
 					# pad all values...
 					fn {val, column_width} ->
 						pad_amount = column_width - width_fn.(val) + padding
-						assert pad_amount >= 0
 						[val, "" |> String.pad_leading(pad_amount)]
 					end,
 					# ...except the one in the last column
