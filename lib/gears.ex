@@ -86,11 +86,40 @@ defmodule Gears do
 			|> String.replace(~r/\n{2,}/, "\n")
 		end
 
+		@doc """
+		Takes (count, singular, plural) and returns either
+		"count singular" (if count == 1) or "count plural" 
+		"""
 		def counted_noun(count, singular, plural) do
 			case count do
 				1 -> "#{count} #{singular}"
 				_ -> "#{count} #{plural}"
 			end
+		end
+
+		@doc """
+		Returns the half-width length of a string.  Han characters count as 2
+		and other characters count as 1.  This is not a complete implementation.
+		See https://github.com/Qqwy/elixir-unicode/issues/2#issuecomment-252511607
+		"""
+		def half_width_length(s) do
+			s
+			|> String.graphemes
+			|> Enum.map(fn grapheme ->
+				case grapheme =~ ~r/^\p{Han}$/u do
+					true  -> 2
+					false -> 1
+				end
+			end)
+			|> Enum.sum
+		end
+
+		@doc """
+		Strips all ANSI escape codes from a string.
+		"""
+		def strip_ansi(s) do
+			# Based on https://github.com/chalk/ansi-regex/blob/dce3806b159260354de1a77c1db543a967f7218f/index.js
+			s |> String.replace(~r/[\x{001b}\x{009b}][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/, "")
 		end
 	end
 

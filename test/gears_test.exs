@@ -107,6 +107,25 @@ defmodule Gears.StringUtilTest do
 		assert StringUtil.counted_noun(1, "unit", "units") == "1 unit"
 		assert StringUtil.counted_noun(2, "unit", "units") == "2 units"
 	end
+
+	test "half_width_length" do
+		assert StringUtil.half_width_length("")      == 0
+		assert StringUtil.half_width_length("h")     == 1
+		assert StringUtil.half_width_length("hi")    == 2
+		assert StringUtil.half_width_length("末")    == 2
+		assert StringUtil.half_width_length("末未")  == 4
+		assert StringUtil.half_width_length("末未.") == 5
+	end
+
+	test "strip_ansi" do
+		assert StringUtil.strip_ansi("")           == ""
+		assert StringUtil.strip_ansi("hi")         == "hi"
+		assert StringUtil.strip_ansi(bolded("hi")) == "hi"
+	end
+
+	defp bolded(s) do
+		"#{IO.ANSI.bright()}#{s}#{IO.ANSI.normal()}"
+	end
 end
 
 defmodule Gears.TableFormatterTest do
