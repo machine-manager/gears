@@ -118,8 +118,8 @@ defmodule Gears do
 		Strips all ANSI escape codes from a string.
 		"""
 		def strip_ansi(s) do
-			# Based on https://github.com/chalk/ansi-regex/blob/dce3806b159260354de1a77c1db543a967f7218f/index.js
-			s |> String.replace(~r/[\x{001b}\x{009b}][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/, "")
+			# Based on https://github.com/chalk/ansi-regex/blob/7c908e7b4eb6cd82bfe1295e33fdf6d166c7ed85/index.js
+			s |> String.replace(~r/[\x{001b}\x{009b}][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-PRZcf-nqry=><]/, "")
 		end
 	end
 
