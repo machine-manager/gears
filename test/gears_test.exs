@@ -173,6 +173,28 @@ defmodule Gears.TableFormatterTest do
 			"""
 	end
 
+	test "table formatter with a different number of columns in some rows" do
+		data = [
+			["hello"],
+			["hello",  "world"],
+			["longer", "world"],
+			[],
+			["longer", "world", "another string",        "end"],
+			["longer", "world", "another longer string", "end"],
+			["hello",  "world"],
+		]
+		assert TableFormatter.format(data) |> IO.iodata_to_binary ==
+		"""
+		hello
+		hello  world
+		longer world
+		
+		longer world another string        end
+		longer world another longer string end
+		hello  world
+		"""
+	end
+
 	defp underlined(s) do
 		"#{IO.ANSI.underline()}#{s}#{IO.ANSI.no_underline()}"
 	end

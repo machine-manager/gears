@@ -141,6 +141,9 @@ defmodule Gears do
 		spaces between each column.  Assumes that all characters are either all
 		halfwidth or all fullwidth.
 
+		Rows are allowed to contain a variable number of columns.  The last column
+		in each row will not be padded.
+
 		## Options
 
 		  * `:padding`  - how many halfwidth spaces between columns (default: 1)
@@ -153,7 +156,7 @@ defmodule Gears do
 
 		  1. compute max width of each column
 		  2. map each value to [value, padding] except last column
-		     - pad amount = (column width - value width) + padding
+		     pad amount = (column width - value width) + padding
 		  3. append \n to each row
 
 		## Example
@@ -165,7 +168,7 @@ defmodule Gears do
 		def format(rows, opts \\ []) do
 			padding  = Keyword.get(opts, :padding,  1)
 			width_fn = Keyword.get(opts, :width_fn, &String.length/1)
-			widths   = rows |> transpose |> column_widths(width_fn)
+			widths   = rows |> pad_short_rows |> transpose |> column_widths(width_fn)
 			rows
 			|> pad_cells(widths, padding, width_fn)
 			|> Enum.map(&[&1, ?\n])
@@ -196,6 +199,17 @@ defmodule Gears do
 						width_fn.(v)
 					end)
 				|> Enum.max
+			end)
+		end
+
+		defp pad_short_rows(rows) do
+			max_length = case rows |> Enum.map(&length/1) do
+				[]    -> 0
+				other -> Enum.max(other)
+			end
+			rows
+			|> Enum.map(fn row ->
+					row ++ List.duplicate("", max_length - length(row))
 			end)
 		end
 
