@@ -221,18 +221,9 @@ defmodule Gears do
 
 		# Map elements in `enumerable` with `fun1` except for the last element
 		# which is mapped with `fun2`.
-		defp map_special(enumerable, fun1, fun2) do
-			do_map_special(enumerable, [], fun1, fun2) |> :lists.reverse
-		end
-
-		defp do_map_special([], _acc, _fun1, _fun2) do
-			[]
-		end
-		defp do_map_special([t], acc, _fun1, fun2) do
-			[fun2.(t) | acc]
-		end
-		defp do_map_special([h|t], acc, fun1, fun2) do
-			do_map_special(t, [fun1.(h) | acc], fun1, fun2)
-		end
+		defp map_special(enumerable,     fun1,  fun2), do: do_map_special(enumerable, [], fun1, fun2) |> :lists.reverse
+		defp do_map_special([],   _acc, _fun1, _fun2), do: []
+		defp do_map_special([t],   acc, _fun1,  fun2), do: [fun2.(t) | acc]
+		defp do_map_special([h|t], acc,  fun1,  fun2), do: do_map_special(t, [fun1.(h) | acc], fun1, fun2)
 	end
 end
