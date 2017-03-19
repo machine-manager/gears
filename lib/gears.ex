@@ -216,7 +216,7 @@ defmodule Gears do
 		defp transpose(rows) do
 			rows
 			|> List.zip
-			|> Enum.map(&Tuple.to_list(&1))
+			|> Enum.map(&Tuple.to_list/1)
 		end
 
 		# Map elements in `enumerable` with `fun1` except for the last element
