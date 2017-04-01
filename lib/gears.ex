@@ -24,7 +24,7 @@ defmodule Gears do
 			end
 		end
 
-		def ok_or_raise({:error, term}), do: raise term
+		def ok_or_raise({:error, term}), do: raise(term)
 		def ok_or_raise(:ok), do: :ok
 	end
 
@@ -39,7 +39,7 @@ defmodule Gears do
 				:ok -> nil
 				{:error, :enoent} -> nil
 				{:error, reason} ->
-					raise File.Error, reason: reason, action: "rm", path: path
+					raise(File.Error, reason: reason, action: "rm", path: path)
 			end
 		end
 
@@ -194,7 +194,7 @@ defmodule Gears do
 				column
 				|> Enum.map(fn v ->
 						if not is_binary(v) do
-							raise ArgumentError, message: "All values given to TableFormatter must be strings"
+							raise(ArgumentError, "All values given to TableFormatter must be strings")
 						end
 						width_fn.(v)
 					end)
