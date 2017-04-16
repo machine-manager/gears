@@ -78,6 +78,12 @@ defmodule Gears.FileUtilTest do
 		path = FileUtil.temp_path("prefix")
 		assert not String.ends_with?(path, ".")
 	end
+
+	test "symlink?" do
+		assert not FileUtil.symlink?("/")
+		assert not FileUtil.symlink?("/tmp")
+		assert FileUtil.symlink?("/vmlinuz")
+	end
 end
 
 defmodule Gears.StringUtilTest do

@@ -59,6 +59,14 @@ defmodule Gears do
 			File.mkdir_p!(p)
 			p
 		end
+
+		@spec symlink?(String.t) :: String.t
+		def symlink?(path) do
+			case :file.read_link_all(path) do
+				{:ok, _target} -> true
+				_              -> false
+			end
+		end
 	end
 
 	defmodule IOUtil do
