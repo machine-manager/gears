@@ -43,9 +43,17 @@ defmodule Gears do
 			end
 		end
 
+		@_2_128 340282366920938463463374607431768211456
+
 		@spec temp_path(String.t, String.t) :: String.t
 		def temp_path(prefix, extension \\ "") do
-			random = :crypto.strong_rand_bytes(16) |> Base.url_encode64(padding: false)
+			# Don't use :crypto.strong_rand_bytes because that requires erlang-crypto, which
+			# may be linked to the wrong version of openssl when configuring a machine from
+			# a machine_manager running on a different Debian/Ubuntu release.
+			random =
+				:rand.uniform(@_2_128)
+				|> :binary.encode_unsigned
+				|> Base.url_encode64(padding: false)
 			path = Path.join(System.tmp_dir, "#{prefix}-#{random}")
 			path <> case String.first(extension) do
 				nil -> ""
