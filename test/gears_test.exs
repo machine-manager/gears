@@ -84,6 +84,23 @@ defmodule Gears.FileUtilTest do
 		assert not FileUtil.symlink?("/tmp")
 		assert FileUtil.symlink?("/vmlinuz")
 	end
+
+	test "exists" do
+		assert FileUtil.exists?(__ENV__.file)
+		refute FileUtil.exists?("_missing.txt")
+	end
+
+	test "exists with dangling symlink" do
+		invalid_file = FileUtil.temp_path("invalid_file")
+		dest         = FileUtil.temp_path("dangling_symlink")
+		File.ln_s(invalid_file, dest)
+
+		try do
+			assert FileUtil.exists?(dest)
+		after
+			File.rm(dest)
+		end
+	end
 end
 
 defmodule Gears.StringUtilTest do

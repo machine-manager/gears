@@ -68,6 +68,16 @@ defmodule Gears do
 			p
 		end
 
+		@doc """
+		Returns `true` if the given path exists. It can be regular file, directory,
+		socket, symbolic link, named pipe or device file.
+
+		Like `File.exists?`, but fixed to return `true` for dangling symlinks.
+		"""
+		def exists?(path) do
+			match?({:ok, _}, :file.read_link_info(IO.chardata_to_string(path)))
+		end
+
 		@spec symlink?(String.t) :: String.t
 		def symlink?(path) do
 			case :file.read_link_all(path) do
