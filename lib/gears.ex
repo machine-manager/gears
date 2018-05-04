@@ -43,18 +43,16 @@ defmodule Gears do
 			end
 		end
 
-		@_2_128 340282366920938463463374607431768211456
-
 		@spec temp_path(String.t, String.t) :: String.t
 		def temp_path(prefix, extension \\ "") do
 			# Don't use :crypto.strong_rand_bytes because that requires erlang-crypto, which
 			# may be linked to the wrong version of openssl when configuring a machine from
 			# a machine_manager running on a different Debian/Ubuntu release.
-			random =
-				:rand.uniform(@_2_128)
-				|> :binary.encode_unsigned
-				|> Base.url_encode64(padding: false)
-			path = Path.join(System.tmp_dir, "#{prefix}-#{random}")
+			#
+			# TODO: use file:open or similar after OTP 21 is released
+			{out, 0} = System.cmd("dd", ["if=/dev/urandom", "of=/dev/stdout", "bs=16", "count=1", "status=none"])
+			random   = Base.url_encode64(out, padding: false)
+			path     = Path.join(System.tmp_dir, "#{prefix}-#{random}")
 			path <> case String.first(extension) do
 				nil -> ""
 				_   -> ".#{extension}"
